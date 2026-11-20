@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School QR Code Generator</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .card { backdrop-filter: blur(10px); }
+</style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="card bg-white/95 rounded-2xl shadow-2xl p-8 max-w-md w-full">
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-bold text-gray-800">School QR Generator</h1>
+      <p class="text-gray-600 mt-2">Create QR codes for links, text, assignments & more</p>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Enter Text or URL</label>
+        <textarea id="textInput" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://school.edu/assignment or any text..."></textarea>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Size</label>
+          <select id="sizeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+            <option value="200">Small (200px)</option>
+            <option value="300" selected>Medium (300px)</option>
+            <option value="400">Large (400px)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+          <input type="color" id="colorInput" value="#000000" class="w-full h-10 border border-gray-300 rounded-lg">
+        </div>
+      </div>
+
+      <button onclick="generateQR()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition">
+        Generate QR Code
+      </button>
+    </div>
+
+    <div id="qrcode" class="mt-6 flex justify-center"></div>
+
+    <div id="downloadSection" class="mt-4 text-center hidden">
+      <button onclick="downloadQR()" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg">
+        Download PNG
+      </button>
+    </div>
+
+    <p class="text-center text-xs text-gray-500 mt-6">Made for school use • Works offline after first load</p>
+  </div>
+
+<script>
+let qrcode = null;
+
+function generateQR() {
+  const text = document.getElementById('textInput').value.trim();
+  if (!text) {
+    alert('Please enter some text or a URL');
+    return;
+  }
+
+  const size = parseInt(document.getElementById('sizeSelect').value);
+  const color = document.getElementById('colorInput').value;
+
+  document.getElementById('qrcode').innerHTML = '';
+  document.getElementById('downloadSection').classList.remove('hidden');
+
+  qrcode = new QRCode(document.getElementById('qrcode'), {
+    text: text,
+    width: size,
+    height: size,
+    colorDark: color,
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+}
+
+function downloadQR() {
+  const canvas = document.querySelector('#qrcode canvas');
+  if (!canvas) return;
+
+  const link = document.createElement('a');
+  link.download = 'school-qrcode.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// Generate on Enter key
+document.getElementById('textInput').addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 'Enter') generateQR();
+});
+</script>
+</body>
+</html>
